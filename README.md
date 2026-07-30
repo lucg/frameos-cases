@@ -54,3 +54,11 @@ flox activate -- npm run test:visual
 ```
 
 The snapshots are written to `visual-regressions/`. GitHub Actions runs the same check and fails when rendering changes any tracked PNG, deletes a stale PNG, or creates a new untracked PNG.
+
+## License
+
+The software and documentation in this repository are licensed under the
+[GNU Affero General Public License v3.0](./LICENSE).
+
+The OpenSCAD hardware designs in [`cases/`](./cases/) are instead licensed
+under the [CERN Open Hardware Licence Version 2 - Strongly Reciprocal](./cases/LICENSE).

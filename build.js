@@ -1,4 +1,4 @@
-// Take all files in "cases/" and its subdirectories
+// Take all OpenSCAD files in "cases/" and its subdirectories
 // and create "dist/cases.json" with { "relative/path/to/file.scad": content }
 
 const fs = require("fs");
@@ -21,7 +21,7 @@ function readDirRecursively(directory, relativePath = "") {
     if (entry.isDirectory()) {
       // Recursively read subdirectories
       readDirRecursively(fullPath, relativeFilePath);
-    } else if (entry.isFile()) {
+    } else if (entry.isFile() && entry.name.endsWith(".scad")) {
       // Read and store file content
       models[relativeFilePath] = fs.readFileSync(fullPath, "utf-8");
     }
