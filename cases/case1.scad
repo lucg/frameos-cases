@@ -102,6 +102,7 @@ tf_pilot_diameter  = 2.5; // Inscribed diameter the ribs reach; screw threads bi
 tf_relief_diameter = 4.0; // Outer relief bore; plastic deforms into the pockets between ribs
 tf_rib_count       = 3;   // Number of inward ribs (thread-biting teeth)
 tf_rib_width       = 1.4; // Chord width of each rib at the pilot circle (mm)
+tf_corner_radius   = 0.25; // Fillet on rib roots & pocket corners for printability; 0 = sharp
 
 /* [Case side holes] */
 
@@ -617,28 +618,9 @@ module case_holes() {
     }   
 }
 
-// Annular pie-slice solid, centered on +X, spanning +/- angle/2, from r_in to r_out.
-module tf_pocket(r_in, r_out, angle, h) {
-    intersection() {
-        difference() {                                   // ring: outer disk minus inner disk
-            cylinder(r = r_out, h = h);
-            translate([0, 0, -0.01]) cylinder(r = r_in, h = h + 0.02);
-        }
-        rotate([0, 0, -angle/2])                         // angular sector (angle < 180)
-        linear_extrude(height = h)
-            polygon([[0,0],
-                     [(r_out+1)*cos(0),     (r_out+1)*sin(0)],
-                     [(r_out+1)*cos(angle), (r_out+1)*sin(angle)]]);
-    }
-}
-
-// Negative for a thread-forming screw hole: pilot bore + relief pockets, cut full body depth.
-// Whatever is NOT removed becomes the ribs. Place caller at z=-eps and pass depth = body+2*eps.
-module thread_forming_hole(pilot_d = tf_pilot_diameter,
-                           relief_d = tf_relief_diameter,
-                           ribs = tf_rib_count,
-                           rib_w = tf_rib_width,
-                           depth, fn = 64) {
+// 2D cross-section of the thread-forming negative: central pilot bore + N relief pockets.
+// The plastic left between adjacent pockets forms the ribs; their crests sit at pilot_r.
+module tf_profile(pilot_d, relief_d, ribs, rib_w) {
     pilot_r  = pilot_d  / 2;
     relief_r = relief_d / 2;
     sector   = 360 / ribs;
@@ -647,12 +629,37 @@ module thread_forming_hole(pilot_d = tf_pilot_diameter,
     if (pocket_ang <= 0)
         echo("WARNING: thread-forming ribs leave no relief pocket; reduce tf_rib_width or tf_rib_count");
     union() {
-        cylinder(d = pilot_d, h = depth, $fn = fn);      // (1) central pilot bore, always cleared
-        for (i = [0 : ribs - 1])                         // (2) one relief pocket per rib gap
-            rotate([0, 0, i * sector + rib_ang + pocket_ang/2])
-                tf_pocket(r_in = pilot_r - 0.01, r_out = relief_r,
-                          angle = pocket_ang, h = depth);
+        circle(d = pilot_d);                             // central pilot bore
+        for (i = [0 : ribs - 1])                         // one relief pocket per rib gap
+            rotate(i * sector + rib_ang + pocket_ang/2)
+            intersection() {                             // annular wedge from pilot_r to relief_r
+                difference() { circle(r = relief_r); circle(r = pilot_r - 0.01); }
+                rotate(-pocket_ang/2)
+                polygon([[0, 0],
+                         [(relief_r + 2),                     0],
+                         [(relief_r + 2) * cos(pocket_ang), (relief_r + 2) * sin(pocket_ang)]]);
+            }
     }
+}
+
+// Negative for a thread-forming screw hole, cut the full body depth. round_r fillets the rib
+// roots AND the pocket corners (open+close offset) so the printed ribs deform without cracking
+// and don't rely on the nozzle to soften sharp corners. Whatever is NOT removed becomes the ribs.
+// Place caller at z=-eps and pass depth = body + 2*eps.
+module thread_forming_hole(pilot_d = tf_pilot_diameter,
+                           relief_d = tf_relief_diameter,
+                           ribs = tf_rib_count,
+                           rib_w = tf_rib_width,
+                           round_r = tf_corner_radius,
+                           depth, fn = 64) {
+    $fn = fn;
+    linear_extrude(height = depth)
+        if (round_r > 0)
+            offset(r = -round_r) offset(r =  round_r)    // round outer (pocket) corners
+            offset(r =  round_r) offset(r = -round_r)    // round inner (rib-root) corners
+                tf_profile(pilot_d, relief_d, ribs, rib_w);
+        else
+            tf_profile(pilot_d, relief_d, ribs, rib_w);
 }
 
 module case() {
