@@ -195,6 +195,15 @@ sd_cutout_hole_width = 9.1;
 sd_cutout_hole_height = 3.2;
 sd_cutout_top_wall_thickness = 5.0;
 
+/* [Hole to cut out of the back] */
+hole_cutout = true;
+hole_cutout_offset_x_percentage = 62;
+hole_cutout_offset_y_percentage = 76.4;
+hole_cutout_box_width = 20;
+hole_cutout_box_height = 13;
+hole_cutout_box_depth = 7;
+
+
 /* [Hanging hole] */
 // [ [top, bottom, left, right], offset_percentage ]
 hanging_holes = [
@@ -250,6 +259,7 @@ pi_pinholes_width = 58;
 extra_pin_mounts_enabled = false;
 extra_pin_mounts_anchor = "center"; // [center, percentage, top-left, top, top-right, left, right, bottom-left, bottom, bottom-right]
 extra_pin_mounts_anchor_percentage = [50, 15]; // Used when anchor is "percentage".
+extra_pin_mounts_hole_diameter = 0; // Blind hole through the raised spacer; 0 disables it.
 // Each mount is [x_offset, y_offset, pin_diameter, spacer_diameter, spacer_height, pin_enabled].
 // Use [x_offset, y_offset] to keep the Raspberry Pi pin defaults, or undef for any optional value.
 extra_pin_mounts = [
@@ -336,6 +346,9 @@ usb_sd_card_y_position = usb_cutout_y + 12 + sd_card_in_usb_cutout_y_percentage 
 
 sd_cutout_x = (frame_full_width - sd_cutout_box_width - sd_cutout_left_wall_thickness - sd_cutout_right_wall_thickness) * sd_cutout_offset_x_percentage / 100;
 sd_cutout_y = (frame_full_height - sd_cutout_box_height - sd_cutout_top_wall_thickness - sd_cutout_bottom_wall_thickness) * sd_cutout_offset_y_percentage / 100;
+
+hole_cutout_x = (frame_full_width - hole_cutout_box_width) * hole_cutout_offset_x_percentage / 100;
+hole_cutout_y = (frame_full_height - hole_cutout_box_height) * hole_cutout_offset_y_percentage / 100;
 
 /*****************************************************************************/
 /*                 Utility: Corner Screw Hole Positions                      */
@@ -874,6 +887,7 @@ module case() {
                     bottom=(view_mode=="print_vertical" && sd_cutout_hole_position != "bottom") || sd_cutout_hole_position == "back"
                 );
             }
+
             for (h = hanging_holes) {
                 let (
                     hanging_hole_edge = h[0],
@@ -959,6 +973,11 @@ module case() {
                      h = case_screw_hole_insert_depth + 0.11); // Hole for the screw thread
         }
 
+        if ((extra_pin_mounts_enabled || extra_pinholes) && extra_pin_mounts_hole_diameter > 0) {
+            color(case_color)
+            extraPinMountHoles();
+        }
+
         if (usb_cutout) {
             // Cutout into box
             color(case_color)
@@ -1022,6 +1041,25 @@ module case() {
                     usb_cutout_back_wall_thickness + 0.22, 
                 ]);
             }
+        }
+
+        if (hole_cutout) {
+            // Cutout into box
+            color(case_color)
+            cubeWithLeftRightGapBridge(
+                loc=[
+                    hole_cutout_x, 
+                    hole_cutout_y,
+                    back_depth + case_depth - hole_cutout_box_depth,
+                ], 
+                size=[
+                    hole_cutout_box_width, 
+                    hole_cutout_box_height, 
+                    hole_cutout_box_depth + 0.11
+                ], 
+                top=false,
+                bottom=false
+            );
         }
 
         if (sd_cutout) {
@@ -1951,6 +1989,23 @@ module extraPinMounts() {
                 extra_pin_mount_spacer_height(mount),
                 extra_pin_mount_pin_enabled(mount)
             );
+        }
+    }
+}
+
+module extraPinMountHoles() {
+    let (anchor = extra_pin_mounts_anchor_point()) {
+        for (mount = extra_pin_mounts_in_use()) {
+            let (spacer_height = extra_pin_mount_spacer_height(mount)) {
+                if (spacer_height > 0) {
+                    translate([
+                        anchor[0] + mount[0],
+                        anchor[1] + mount[1],
+                        case_depth - spacer_height - 0.11
+                    ])
+                    cylinder(d = extra_pin_mounts_hole_diameter, h = spacer_height + 0.11);
+                }
+            }
         }
     }
 }
