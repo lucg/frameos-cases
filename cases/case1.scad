@@ -92,6 +92,18 @@ case_screw_hole_thread_diameter = 2.0; // Hole for the screw thread that goes al
 case_screw_hole_floor_depth     = 1.0; // Depth of the floor of the screw hole
 case_screw_hole_insert_depth    = 4.0; // Leave this much room at bottom for the heat set insert
 
+// --- Fastener selection ---
+// heat_set_insert: pocket + thru-hole for a brass heat-set insert (default, unchanged)
+// thread_forming:  drive a self-tapping / thread-forming screw directly into the plastic
+fastener_type = "heat_set_insert"; // [heat_set_insert, thread_forming]
+
+// --- Thread-forming ("bolt into plastic") geometry, M3-class into PLA/PETG ---
+tf_pilot_diameter  = 2.5; // Inscribed diameter the ribs reach; screw threads bite here
+tf_relief_diameter = 4.0; // Outer relief bore; plastic deforms into the pockets between ribs
+tf_rib_count       = 3;   // Number of inward ribs (thread-biting teeth)
+tf_rib_width       = 1.4; // Chord width of each rib at the pilot circle (mm)
+tf_corner_radius   = 0.25; // Fillet on rib roots & pocket corners for printability; 0 = sharp
+
 /* [Case side holes] */
 
 case_hole_left_top = 0;
@@ -606,6 +618,50 @@ module case_holes() {
     }   
 }
 
+// 2D cross-section of the thread-forming negative: central pilot bore + N relief pockets.
+// The plastic left between adjacent pockets forms the ribs; their crests sit at pilot_r.
+module tf_profile(pilot_d, relief_d, ribs, rib_w) {
+    pilot_r  = pilot_d  / 2;
+    relief_r = relief_d / 2;
+    sector   = 360 / ribs;
+    rib_ang  = 2 * asin(min(1, rib_w / (2 * pilot_r)));  // exact chord->angle, degrees
+    pocket_ang = sector - rib_ang;
+    if (pocket_ang <= 0)
+        echo("WARNING: thread-forming ribs leave no relief pocket; reduce tf_rib_width or tf_rib_count");
+    union() {
+        circle(d = pilot_d);                             // central pilot bore
+        for (i = [0 : ribs - 1])                         // one relief pocket per rib gap
+            rotate(i * sector + rib_ang + pocket_ang/2)
+            intersection() {                             // annular wedge from pilot_r to relief_r
+                difference() { circle(r = relief_r); circle(r = pilot_r - 0.01); }
+                rotate(-pocket_ang/2)
+                polygon([[0, 0],
+                         [(relief_r + 2),                     0],
+                         [(relief_r + 2) * cos(pocket_ang), (relief_r + 2) * sin(pocket_ang)]]);
+            }
+    }
+}
+
+// Negative for a thread-forming screw hole, cut the full body depth. round_r fillets the rib
+// roots AND the pocket corners (open+close offset) so the printed ribs deform without cracking
+// and don't rely on the nozzle to soften sharp corners. Whatever is NOT removed becomes the ribs.
+// Place caller at z=-eps and pass depth = body + 2*eps.
+module thread_forming_hole(pilot_d = tf_pilot_diameter,
+                           relief_d = tf_relief_diameter,
+                           ribs = tf_rib_count,
+                           rib_w = tf_rib_width,
+                           round_r = tf_corner_radius,
+                           depth, fn = 64) {
+    $fn = fn;
+    linear_extrude(height = depth)
+        if (round_r > 0)
+            offset(r = -round_r) offset(r =  round_r)    // round outer (pocket) corners
+            offset(r =  round_r) offset(r = -round_r)    // round inner (rib-root) corners
+                tf_profile(pilot_d, relief_d, ribs, rib_w);
+        else
+            tf_profile(pilot_d, relief_d, ribs, rib_w);
+}
+
 module case() {
     // Cut out inner cylinders for screws
     difference() {
@@ -713,12 +769,13 @@ module case() {
         
         // Cut holes to the back
         for (c = screw_positions) {
+          if (fastener_type == "heat_set_insert") {
             // Screw thread hole that goes all the way
             color(case_color)
             translate([c[0], c[1], - 0.11])
             cylinder(d = case_screw_hole_thread_diameter,
                      h = case_depth + back_depth + 0.11);
-            
+
             hole_depth = case_depth + back_depth - case_screw_hole_insert_depth - case_screw_hole_floor_depth + 0.11;
 
             if (hole_depth > case_screw_hole_diameter - case_screw_hole_thread_diameter) {
@@ -747,6 +804,11 @@ module case() {
             translate([c[0], c[1], - 0.11]) // Solid border around the screw hole
             cylinder(d = case_screw_hole_diameter,
                      h = case_screw_hole_insert_depth + 0.11); // Hole for the screw thread
+          } else { // thread_forming: bolt directly into the plastic
+            color(case_color)
+            translate([c[0], c[1], -0.11])
+                thread_forming_hole(depth = case_depth + back_depth + 0.22);
+          }
         }
 
         if (usb_cutout) {
