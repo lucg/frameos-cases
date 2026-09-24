@@ -42,6 +42,17 @@ case_inner_padding_right = 4;
 case_inner_padding_top = 4;
 case_inner_padding_bottom = 4;
 
+/* [Cover/case thickness reversal] */
+
+// Move border case depth from the case body to the cover.
+reverse_border_thickness = false;
+reverse_border_gap = 0.3;
+reverse_border_left_width = panel_border_left;
+reverse_border_right_width = panel_border_right;
+reverse_border_top_width = panel_border_top;
+reverse_border_bottom_width = panel_border_bottom;
+reverse_border_panel_lead_in_depth = max(fillet_radius - back_depth, 0);
+
 /* [Thick border] */
 thick_border = false;
 thick_border_width = 12.0;
@@ -92,6 +103,8 @@ case_screw_hole_thread_diameter = 2.0; // Hole for the screw thread that goes al
 case_screw_hole_floor_depth     = 1.0; // Depth of the floor of the screw hole
 case_screw_hole_insert_depth    = 4.0; // Leave this much room at bottom for the heat set insert
 
+reverse_border_screw_post_diameter = max(case_screw_hole_diameter + 1.5, panel_screw_insert_diameter + 2.0);
+
 /* [Case side holes] */
 
 case_hole_left_top = 0;
@@ -125,10 +138,11 @@ kickstand_leg_bridge_offset_percentage = 15;
 kickstand_leg_bridge_height = 7;
 kickstand_depth = 7;
 kickstand_bottom_start = 2;
+kickstand_leg_bottom_padding = 0.2;
+kickstand_leg_bottom_angle = 80; // [45:90] Angle of the sloped bottom face of the kickstand feet
 kickstand_wall_thickness = 1;
 kickstand_gap_thickness = 0.5;
 kickstand_hinge_diameter = 2.2;
-kickstand_leg_hole_diameter = 5;
 kickstand_hinge_top_extra_leverage = 3; // Height added to the flap above the hinge. Increasing reduces max rotation
 kickstand_hinge_wall_padding = 0.2; // Distance from the back wall
 kickstand_hinge_cylinder_gap = 0.5; // Gap between the hinge and the cylinder
@@ -152,6 +166,7 @@ usb_cutout_left_wall_thickness = 1.4;
 usb_cutout_right_wall_thickness = 1.4;
 usb_cutout_bottom_wall_thickness = 1.4;
 usb_cutout_back_wall_thickness = 0.8;
+usb_cutout_hole_offset = 0;
 usb_cutout_hole_position = "top"; // [top, bottom, left, right, back]
 // Larger USB-C
 // usb_cutout_hole_width = 14;
@@ -161,6 +176,33 @@ usb_cutout_hole_position = "top"; // [top, bottom, left, right, back]
 usb_cutout_hole_width = 9.1;
 usb_cutout_hole_height = 3.2;
 usb_cutout_top_wall_thickness = 5.0;
+
+/* [SD cutout] */
+
+sd_cutout = false;
+sd_cutout_offset_x_percentage = 80;
+sd_cutout_offset_y_percentage = 20;
+sd_cutout_box_width = 20;
+sd_cutout_box_height = 50;
+sd_cutout_box_depth = 7;
+sd_cutout_left_wall_thickness = 1.4;
+sd_cutout_right_wall_thickness = 1.4;
+sd_cutout_bottom_wall_thickness = 1.4;
+sd_cutout_back_wall_thickness = 0.8;
+sd_cutout_hole_offset = 0;
+sd_cutout_hole_position = "top"; // [top, bottom, left, right, back]
+sd_cutout_hole_width = 9.1;
+sd_cutout_hole_height = 3.2;
+sd_cutout_top_wall_thickness = 5.0;
+
+/* [Hole to cut out of the back] */
+hole_cutout = true;
+hole_cutout_offset_x_percentage = 62;
+hole_cutout_offset_y_percentage = 76.4;
+hole_cutout_box_width = 20;
+hole_cutout_box_height = 13;
+hole_cutout_box_depth = 7;
+
 
 /* [Hanging hole] */
 // [ [top, bottom, left, right], offset_percentage ]
@@ -180,9 +222,11 @@ hanging_hole_wall_thickness = 1;
 /* [SD card adapter cutout] */
 
 sd_card_in_leg = false;
+sd_card_in_leg_shape = "adapter"; // [adapter, hole]
 sd_card_in_leg_side = "left"; // [left, right]
 sd_card_in_leg_side_side = "left"; // [left, right]
 sd_card_in_leg_y_percentage = 75.5;
+sd_card_in_leg_hole_offset = 1.8; // for shape=hole... mm from base
 
 sd_card_in_usb_cutout = false;
 sd_card_in_usb_cutout_side = "right"; // [left, right]
@@ -211,6 +255,35 @@ pi_pinholes_spacer_height = 3;
 pi_pinholes_height = 23;
 pi_pinholes_width = 58;
 
+/* [Extra Pin Mounts] */
+extra_pin_mounts_enabled = false;
+extra_pin_mounts_anchor = "center"; // [center, percentage, top-left, top, top-right, left, right, bottom-left, bottom, bottom-right]
+extra_pin_mounts_anchor_percentage = [50, 15]; // Used when anchor is "percentage".
+extra_pin_mounts_hole_diameter = 0; // Blind hole through the raised spacer; 0 disables it.
+// Each mount is [x_offset, y_offset, pin_diameter, spacer_diameter, spacer_height, pin_enabled].
+// Use [x_offset, y_offset] to keep the Raspberry Pi pin defaults, or undef for any optional value.
+extra_pin_mounts = [
+    [0, 0]
+];
+
+/* [Hidden] */
+extra_pinholes = false;
+extra_pinholes_anchor = "center"; // [center, percentage, top-left, top, top-right, left, right, bottom-left, bottom, bottom-right]
+extra_pinholes_anchor_percentage = [50, 15]; // Used when anchor is "percentage".
+extra_pinholes_offsets = [
+    [0, 0]
+];
+
+/* [Backplate Access Holes] */
+backplate_access_holes = false;
+backplate_access_holes_diameter = 2;
+backplate_access_holes_anchor = "center"; // [center, percentage, top-left, top, top-right, left, right, bottom-left, bottom, bottom-right]
+backplate_access_holes_anchor_percentage = [50, 15]; // Used when anchor is "percentage".
+backplate_access_holes_offsets = [
+    [0, 0]
+];
+
+
 /* [Side buttons] */
 side_buttons_left = [];
 side_buttons_right = [];
@@ -223,7 +296,7 @@ side_button_base = 1; // Height of square rectangle below the button
 side_button_base_border = 1; // Extra around width and height
 side_button_base_inner = 1.0; // How much does the button base go inside the case body
 side_button_hole_gap = 0.3; // How much more to carve out of the hole
-side_button_fillet_radius = 1.0; // Radius of the fillet on the button
+side_button_fillet_radius = 0.0; // Radius of the fillet on the button
 
 /* [Debug] */
 // Gap between STL parts for visual debugging
@@ -271,6 +344,11 @@ usb_cutout_y = (frame_full_height - usb_cutout_box_height - usb_cutout_top_wall_
 usb_sd_card_x_position = sd_card_in_usb_cutout_side == "left" ? usb_cutout_x + usb_cutout_left_wall_thickness + 0.11 : usb_cutout_box_width + usb_cutout_left_wall_thickness + usb_cutout_x - 0.11;
 usb_sd_card_y_position = usb_cutout_y + 12 + sd_card_in_usb_cutout_y_percentage / 100 * (usb_cutout_box_height -24);
 
+sd_cutout_x = (frame_full_width - sd_cutout_box_width - sd_cutout_left_wall_thickness - sd_cutout_right_wall_thickness) * sd_cutout_offset_x_percentage / 100;
+sd_cutout_y = (frame_full_height - sd_cutout_box_height - sd_cutout_top_wall_thickness - sd_cutout_bottom_wall_thickness) * sd_cutout_offset_y_percentage / 100;
+
+hole_cutout_x = (frame_full_width - hole_cutout_box_width) * hole_cutout_offset_x_percentage / 100;
+hole_cutout_y = (frame_full_height - hole_cutout_box_height) * hole_cutout_offset_y_percentage / 100;
 
 /*****************************************************************************/
 /*                 Utility: Corner Screw Hole Positions                      */
@@ -328,8 +406,12 @@ function hanging_hole_position(edge, offset_percentage) =
 
 module panel_cover() {
     difference() {
-        // Top block
-        filletBoxTop(frame_full_width, frame_full_height, panel_cover_depth + panel_depth);
+        union() {
+            // Top block
+            filletBoxTop(frame_full_width, frame_full_height, panel_cover_depth + panel_depth);
+
+            reverse_border_panel_cover_extension();
+        }
         
         // Window for the eInk panel’s visible area
         translate(
@@ -348,7 +430,7 @@ module panel_cover() {
         for (c = screw_positions) {
             translate([c[0], c[1],  panel_cover_depth + panel_depth - panel_screw_insert_depth])
                 cylinder(d = panel_screw_insert_diameter, 
-                         h = panel_screw_insert_depth + 0.11);
+                         h = panel_screw_insert_depth + (reverse_border_thickness ? case_depth : 0) + 0.11);
         }
 
         // Internal rectangular cutout matching the panel
@@ -365,17 +447,136 @@ module panel_cover() {
             panel_depth + 0.22
         ]);
         if (panel_cable_gap_bottom > 0) {
-            render_panel_cable_gap_bottom(panel_depth, panel_cover_depth);
+            render_panel_cable_gap_bottom(panel_cover_cable_gap_depth(), panel_cover_depth);
         }
         if (panel_cable_gap_top > 0) {
-            render_panel_cable_gap_top(panel_depth, panel_cover_depth);
+            render_panel_cable_gap_top(panel_cover_cable_gap_depth(), panel_cover_depth);
         }
         if (panel_cable_gap_left > 0) {
-            render_panel_cable_gap_left(panel_depth, panel_cover_depth);
+            render_panel_cable_gap_left(panel_cover_cable_gap_depth(), panel_cover_depth);
         }
         if (panel_cable_gap_right > 0) {
-            render_panel_cable_gap_right(panel_depth, panel_cover_depth);
+            render_panel_cable_gap_right(panel_cover_cable_gap_depth(), panel_cover_depth);
         }
+
+        reverse_border_panel_cover_side_button_holes();
+    }
+}
+
+function panel_cover_cable_gap_depth() =
+    panel_depth + (reverse_border_thickness ? case_depth : 0);
+
+module reverse_border_panel_cover_extension() {
+    if (reverse_border_thickness && case_depth > 0) {
+        difference() {
+            union() {
+                reverse_border_panel_cover_strips();
+                reverse_border_panel_cover_screw_posts();
+            }
+
+            reverse_border_kickstand_keepouts();
+        }
+    }
+}
+
+module reverse_border_panel_cover_strips() {
+    difference() {
+        translate([0, 0, panel_cover_depth + panel_depth - 0.01])
+        reverse_border_panel_cover_outer_shape(case_depth + 0.01);
+
+        translate([
+            reverse_border_left_width,
+            reverse_border_top_width,
+            panel_cover_depth + panel_depth - 0.02
+        ])
+        cube([
+            frame_full_width - reverse_border_left_width - reverse_border_right_width,
+            frame_full_height - reverse_border_top_width - reverse_border_bottom_width,
+            case_depth + 0.04
+        ]);
+    }
+}
+
+module reverse_border_panel_cover_outer_shape(depth) {
+    lead_in_depth = min(reverse_border_panel_lead_in_depth, depth);
+    if (lead_in_depth > 0) {
+        intersection() {
+            filletBoxBottom(
+                frame_full_width,
+                frame_full_height,
+                depth + lead_in_depth,
+                r=fillet_radius_in_use
+            );
+
+            cube([frame_full_width, frame_full_height, depth]);
+        }
+    } else {
+        filletBoxMiddle(frame_full_width, frame_full_height, depth);
+    }
+}
+
+module reverse_border_panel_cover_screw_posts() {
+    intersection() {
+        union() {
+            for (c = screw_positions) {
+                translate([
+                    c[0],
+                    c[1],
+                    panel_cover_depth + panel_depth - 0.01
+                ])
+                cylinder(d = reverse_border_screw_post_diameter, h = case_depth + 0.01);
+            }
+        }
+
+        reverse_border_panel_cover_strips();
+    }
+}
+
+module reverse_border_kickstand_keepouts() {
+    if (kickstand) {
+        let (
+            leg_x_starts_full = [
+                (frame_full_width - kickstand_full_width) / 2,
+                (frame_full_width + kickstand_full_width) / 2 - kickstand_leg_full_width,
+            ],
+            leg_y = frame_full_height - kickstand_bottom_start - kickstand_height,
+            leg_bridge_leg_y = frame_full_height - kickstand_bottom_start - kickstand_leg_bridge_offset - kickstand_leg_bridge_height * 2,
+            leg_bridge_full_y = leg_bridge_leg_y - kickstand_wall_thickness,
+            bridge_x = leg_x_starts_full[0] + kickstand_leg_full_width - kickstand_wall_thickness * 2,
+            bridge_y = leg_bridge_full_y + kickstand_depth - kickstand_wall_thickness,
+            bridge_width = kickstand_full_width - kickstand_leg_full_width * 2 + kickstand_wall_thickness * 4,
+            bridge_height = kickstand_leg_bridge_height * 2 + kickstand_wall_thickness * 2 - kickstand_depth * 2
+        ) {
+            for (x = leg_x_starts_full) {
+                reverse_border_keepout_cube(
+                    x - reverse_border_gap,
+                    leg_y - reverse_border_gap,
+                    kickstand_leg_full_width + reverse_border_gap * 2,
+                    kickstand_height + reverse_border_gap * 2
+                );
+            }
+
+            reverse_border_keepout_cube(
+                bridge_x - reverse_border_gap,
+                bridge_y - reverse_border_gap,
+                bridge_width + reverse_border_gap * 2,
+                bridge_height + reverse_border_gap * 2
+            );
+        }
+    }
+}
+
+module reverse_border_keepout_cube(x, y, width, height) {
+    if (width > 0 && height > 0) {
+        translate([x, y, panel_cover_depth + panel_depth - 0.02])
+        cube([width, height, case_depth + 0.04]);
+    }
+}
+
+module reverse_border_panel_cover_side_button_holes() {
+    if (reverse_border_thickness) {
+        translate([0, 0, panel_cover_depth + panel_depth])
+        sideButtonHoles();
     }
 }
 
@@ -668,6 +869,25 @@ module case() {
                     sdCardAdapterBase();
                 }
             }
+
+            if (sd_cutout) {
+                color(case_color)
+                cubeWithAngledTopBottom(
+                    loc=[
+                        sd_cutout_x, 
+                        sd_cutout_y,
+                        back_depth + case_depth - (sd_cutout_box_depth + sd_cutout_back_wall_thickness),
+                    ], 
+                    size=[
+                        sd_cutout_box_width + sd_cutout_left_wall_thickness + sd_cutout_right_wall_thickness, 
+                        sd_cutout_box_height + sd_cutout_top_wall_thickness + sd_cutout_bottom_wall_thickness,
+                        sd_cutout_box_depth + sd_cutout_back_wall_thickness
+                    ], 
+                    top=(view_mode=="print_vertical" && sd_cutout_hole_position != "top") || sd_cutout_hole_position == "back",
+                    bottom=(view_mode=="print_vertical" && sd_cutout_hole_position != "bottom") || sd_cutout_hole_position == "back"
+                );
+            }
+
             for (h = hanging_holes) {
                 let (
                     hanging_hole_edge = h[0],
@@ -699,6 +919,10 @@ module case() {
             if (pi_pinholes) {
                 color(case_color)
                 piPinholes();
+            }
+            if (extra_pin_mounts_enabled || extra_pinholes) {
+                color(case_color)
+                extraPinMounts();
             }
 
             // Cut out a piece of the cube
@@ -749,6 +973,11 @@ module case() {
                      h = case_screw_hole_insert_depth + 0.11); // Hole for the screw thread
         }
 
+        if ((extra_pin_mounts_enabled || extra_pinholes) && extra_pin_mounts_hole_diameter > 0) {
+            color(case_color)
+            extraPinMountHoles();
+        }
+
         if (usb_cutout) {
             // Cutout into box
             color(case_color)
@@ -780,7 +1009,7 @@ module case() {
                 translate([
                     (frame_full_width - usb_cutout_box_width - usb_cutout_left_wall_thickness - usb_cutout_right_wall_thickness) * usb_cutout_offset_x_percentage / 100 - 0.11 + (usb_cutout_hole_position == "right" ? usb_cutout_box_width + usb_cutout_left_wall_thickness : 0), 
                     (frame_full_height - usb_cutout_box_height - usb_cutout_top_wall_thickness - usb_cutout_bottom_wall_thickness) * usb_cutout_offset_y_percentage / 100 + usb_cutout_top_wall_thickness + (usb_cutout_box_height - usb_cutout_hole_width) / 2,
-                    back_depth + case_depth - usb_cutout_box_depth + (usb_cutout_box_depth - usb_cutout_hole_height) / 2,
+                    back_depth + case_depth - usb_cutout_box_depth + (usb_cutout_box_depth - usb_cutout_hole_height) / 2 + usb_cutout_hole_offset,
                 ])
                 cube([
                     (usb_cutout_hole_position == "left" ? usb_cutout_left_wall_thickness : usb_cutout_right_wall_thickness) + 0.22, 
@@ -792,7 +1021,7 @@ module case() {
                 translate([
                     (frame_full_width - usb_cutout_box_width - usb_cutout_left_wall_thickness - usb_cutout_right_wall_thickness) * usb_cutout_offset_x_percentage / 100 + usb_cutout_left_wall_thickness + (usb_cutout_box_width - usb_cutout_hole_width) / 2, 
                     (frame_full_height - usb_cutout_box_height - usb_cutout_top_wall_thickness - usb_cutout_bottom_wall_thickness) * usb_cutout_offset_y_percentage / 100 - 0.11  + (usb_cutout_hole_position == "bottom" ? usb_cutout_box_height + usb_cutout_top_wall_thickness : 0),
-                    back_depth + case_depth - usb_cutout_box_depth + (usb_cutout_box_depth - usb_cutout_hole_height) / 2,
+                    back_depth + case_depth - usb_cutout_box_depth + (usb_cutout_box_depth - usb_cutout_hole_height) / 2 + usb_cutout_hole_offset,
                 ])
                 cube([
                     usb_cutout_hole_width, 
@@ -810,6 +1039,83 @@ module case() {
                     usb_cutout_hole_width, 
                     usb_cutout_hole_height,
                     usb_cutout_back_wall_thickness + 0.22, 
+                ]);
+            }
+        }
+
+        if (hole_cutout) {
+            // Cutout into box
+            color(case_color)
+            cubeWithLeftRightGapBridge(
+                loc=[
+                    hole_cutout_x, 
+                    hole_cutout_y,
+                    back_depth + case_depth - hole_cutout_box_depth,
+                ], 
+                size=[
+                    hole_cutout_box_width, 
+                    hole_cutout_box_height, 
+                    hole_cutout_box_depth + 0.11
+                ], 
+                top=false,
+                bottom=false
+            );
+        }
+
+        if (sd_cutout) {
+            // Cutout into box
+            color(case_color)
+            cubeWithLeftRightGapBridge(
+                loc=[
+                    sd_cutout_x + sd_cutout_left_wall_thickness, 
+                    sd_cutout_y + sd_cutout_top_wall_thickness,
+                    back_depth + case_depth - sd_cutout_box_depth,
+                ], 
+                size=[
+                    sd_cutout_box_width, 
+                    sd_cutout_box_height, 
+                    sd_cutout_box_depth + 0.11
+                ], 
+                top=(view_mode=="print_vertical" && sd_cutout_hole_position != "top") || sd_cutout_hole_position == "back",
+                bottom=(view_mode=="print_vertical" && sd_cutout_hole_position != "bottom") || sd_cutout_hole_position == "back"
+            );
+
+            // Hole into what's remaining
+            if (sd_cutout_hole_position == "left" || sd_cutout_hole_position == "right") {
+                color(case_color)
+                translate([
+                    (frame_full_width - sd_cutout_box_width - sd_cutout_left_wall_thickness - sd_cutout_right_wall_thickness) * sd_cutout_offset_x_percentage / 100 - 0.11 + (sd_cutout_hole_position == "right" ? sd_cutout_box_width + sd_cutout_left_wall_thickness : 0), 
+                    (frame_full_height - sd_cutout_box_height - sd_cutout_top_wall_thickness - sd_cutout_bottom_wall_thickness) * sd_cutout_offset_y_percentage / 100 + sd_cutout_top_wall_thickness + (sd_cutout_box_height - sd_cutout_hole_width) / 2,
+                    back_depth + case_depth - sd_cutout_box_depth + (sd_cutout_box_depth - sd_cutout_hole_height) / 2 + sd_cutout_hole_offset,
+                ])
+                cube([
+                    (sd_cutout_hole_position == "left" ? sd_cutout_left_wall_thickness : sd_cutout_right_wall_thickness) + 0.22, 
+                    sd_cutout_hole_width, 
+                    sd_cutout_hole_height
+                ]);
+            } else if (sd_cutout_hole_position == "top" || sd_cutout_hole_position == "bottom") {
+                color(case_color)
+                translate([
+                    (frame_full_width - sd_cutout_box_width - sd_cutout_left_wall_thickness - sd_cutout_right_wall_thickness) * sd_cutout_offset_x_percentage / 100 + sd_cutout_left_wall_thickness + (sd_cutout_box_width - sd_cutout_hole_width) / 2, 
+                    (frame_full_height - sd_cutout_box_height - sd_cutout_top_wall_thickness - sd_cutout_bottom_wall_thickness) * sd_cutout_offset_y_percentage / 100 - 0.11  + (sd_cutout_hole_position == "bottom" ? sd_cutout_box_height + sd_cutout_top_wall_thickness : 0),
+                    back_depth + case_depth - sd_cutout_box_depth + (sd_cutout_box_depth - sd_cutout_hole_height) / 2 + sd_cutout_hole_offset,
+                ])
+                cube([
+                    sd_cutout_hole_width, 
+                    (sd_cutout_hole_position == "top" ? sd_cutout_top_wall_thickness : sd_cutout_bottom_wall_thickness) + 0.22, 
+                    sd_cutout_hole_height
+                ]);
+            } else if (sd_cutout_hole_position == "back") {
+                color(case_color)
+                translate([
+                    (frame_full_width - sd_cutout_box_width - sd_cutout_left_wall_thickness - sd_cutout_right_wall_thickness) * sd_cutout_offset_x_percentage / 100 + sd_cutout_left_wall_thickness + (sd_cutout_box_width - sd_cutout_hole_width) / 2, 
+                    (frame_full_height - sd_cutout_box_height - sd_cutout_top_wall_thickness - sd_cutout_bottom_wall_thickness) * sd_cutout_offset_y_percentage / 100 - 0.11 + (sd_cutout_box_height - sd_cutout_hole_height) / 2 + sd_cutout_top_wall_thickness,
+                    back_depth + case_depth - sd_cutout_box_depth - sd_cutout_back_wall_thickness - 0.11,
+                ])
+                cube([
+                    sd_cutout_hole_width, 
+                    sd_cutout_hole_height,
+                    sd_cutout_back_wall_thickness + 0.22, 
                 ]);
             }
         }
@@ -910,8 +1216,142 @@ module case() {
             piPinholesCooling();
         }
 
-        color(case_color)
-        sideButtonHoles();
+        if (backplate_access_holes) {
+            color(case_color)
+            backplateAccessHoles();
+        }
+
+        if (reverse_border_thickness) {
+            color(case_color)
+            reverse_border_case_side_button_clearance();
+        } else {
+            color(case_color)
+            sideButtonHoles();
+        }
+
+        reverse_border_case_cutout();
+    }
+}
+
+module reverse_border_case_cutout() {
+    if (reverse_border_thickness && case_depth > 0) {
+        reverse_border_case_cutout_strips();
+        reverse_border_case_screw_cutouts();
+    }
+}
+
+module reverse_border_case_cutout_strips() {
+    reverse_border_case_cutout_cube(
+        -reverse_border_gap,
+        -reverse_border_gap,
+        reverse_border_left_width + reverse_border_gap * 2,
+        frame_full_height + reverse_border_gap * 2
+    );
+    reverse_border_case_cutout_cube(
+        frame_full_width - reverse_border_right_width - reverse_border_gap,
+        -reverse_border_gap,
+        reverse_border_right_width + reverse_border_gap * 2,
+        frame_full_height + reverse_border_gap * 2
+    );
+    reverse_border_case_cutout_cube(
+        -reverse_border_gap,
+        -reverse_border_gap,
+        frame_full_width + reverse_border_gap * 2,
+        reverse_border_top_width + reverse_border_gap * 2
+    );
+    reverse_border_case_cutout_cube(
+        -reverse_border_gap,
+        frame_full_height - reverse_border_bottom_width - reverse_border_gap,
+        frame_full_width + reverse_border_gap * 2,
+        reverse_border_bottom_width + reverse_border_gap * 2
+    );
+}
+
+module reverse_border_case_screw_cutouts() {
+    intersection() {
+        union() {
+            for (c = screw_positions) {
+                translate([c[0], c[1], -0.11])
+                cylinder(
+                    d = reverse_border_screw_post_diameter + reverse_border_gap * 2,
+                    h = case_depth + 0.11
+                );
+            }
+        }
+
+        union() {
+            reverse_border_case_cutout_strips();
+        }
+    }
+}
+
+module reverse_border_case_cutout_cube(x, y, width, height) {
+    if (width > 0 && height > 0) {
+        translate([x, y, -0.11])
+        cube([
+            width,
+            height,
+            case_depth + 0.11
+        ]);
+    }
+}
+
+module reverse_border_case_side_button_clearance() {
+    let (
+        clearance_width = side_button_width + side_button_base_border * 2 + side_button_hole_gap * 2,
+        depth = case_depth + 0.11
+    ) {
+        for (side_button = side_buttons_left) {
+            translate([
+                -reverse_border_gap,
+                side_button * frame_full_height - clearance_width / 2,
+                -0.11
+            ])
+            cube([
+                panel_border_left + case_inner_padding_left + reverse_border_gap,
+                clearance_width,
+                depth
+            ]);
+        }
+
+        for (side_button = side_buttons_right) {
+            translate([
+                frame_full_width - panel_border_right - case_inner_padding_right,
+                side_button * frame_full_height - clearance_width / 2,
+                -0.11
+            ])
+            cube([
+                panel_border_right + case_inner_padding_right + reverse_border_gap,
+                clearance_width,
+                depth
+            ]);
+        }
+
+        for (side_button = side_buttons_top) {
+            translate([
+                side_button * frame_full_width - clearance_width / 2,
+                -reverse_border_gap,
+                -0.11
+            ])
+            cube([
+                clearance_width,
+                panel_border_top + case_inner_padding_top + reverse_border_gap,
+                depth
+            ]);
+        }
+
+        for (side_button = side_buttons_bottom) {
+            translate([
+                side_button * frame_full_width - clearance_width / 2,
+                frame_full_height - panel_border_bottom - case_inner_padding_bottom,
+                -0.11
+            ])
+            cube([
+                clearance_width,
+                panel_border_bottom + case_inner_padding_bottom + reverse_border_gap,
+                depth
+            ]);
+        }
     }
 }
 
@@ -919,8 +1359,11 @@ module case() {
 /*                             Kickstand                                     */
 /*****************************************************************************/
 
+function angled_face_run(depth, angle) =
+    depth / tan(max(min(angle, 89.9), 0.1));
+
 module caseWithKickstand() {
-    hinge_real_depth = kickstand_depth - kickstand_wall_thickness - kickstand_hinge_wall_padding - kickstand_hinge_diameter / 2;
+    hinge_real_depth = kickstand_depth - kickstand_wall_thickness - kickstand_hinge_wall_padding;
     hinge_top_offset = kickstand_wall_thickness + kickstand_depth / 2 + kickstand_hinge_top_extra_leverage;
     hinge_start = [
         frame_full_width / 2 - kickstand_full_width / 2 + 0.11, 
@@ -941,6 +1384,9 @@ module caseWithKickstand() {
     ];
     leg_depth = kickstand_depth - kickstand_gap_thickness - kickstand_wall_thickness;
     leg_bridge_depth = leg_depth * 0.8;
+    leg_bottom_run = angled_face_run(leg_depth, kickstand_leg_bottom_angle);
+    leg_hole_depth = kickstand_depth - kickstand_wall_thickness + kickstand_gap_thickness + 0.11;
+    leg_hole_bottom_run = angled_face_run(leg_hole_depth, kickstand_leg_bottom_angle);
     leg_yz = [
         frame_full_height - kickstand_bottom_start - kickstand_height + kickstand_gap_thickness + kickstand_wall_thickness,
         case_depth + back_depth - leg_depth
@@ -1018,11 +1464,12 @@ module caseWithKickstand() {
                 ],
                 size=[
                     kickstand_leg_width + 2 * kickstand_gap_thickness,
-                    kickstand_height - 2 * kickstand_wall_thickness - (kickstand_depth - kickstand_wall_thickness + kickstand_gap_thickness),
-                    kickstand_depth - kickstand_wall_thickness + kickstand_gap_thickness + 0.11
+                    max(kickstand_height - 2 * kickstand_wall_thickness - leg_hole_bottom_run, 0.01),
+                    leg_hole_depth
                 ],
                 bottom=true,
-                gap_width=0.4
+                gap_width=0.4,
+                bottom_angle=kickstand_leg_bottom_angle
             );
         }
 
@@ -1087,15 +1534,16 @@ module caseWithKickstand() {
                     cubeWithAngledTopBottom(
                         loc=[
                             0, 
-                            leg_yz[0] - hinge_start[1] + hinge_top_offset - kickstand_hinge_diameter,
+                            leg_yz[0] - hinge_start[1] + hinge_top_offset - kickstand_hinge_diameter - kickstand_leg_bottom_padding,
                             leg_yz[1] - hinge_start[2]
                         ],
                         size=[
                             kickstand_leg_width, 
-                            kickstand_height - kickstand_gap_thickness - kickstand_wall_thickness * 2 - kickstand_gap_thickness - hinge_top_offset + kickstand_hinge_diameter - leg_depth,
+                            max(kickstand_height - kickstand_gap_thickness - kickstand_wall_thickness * 2 - kickstand_gap_thickness - hinge_top_offset + kickstand_hinge_diameter - leg_bottom_run - kickstand_leg_bottom_padding, 0.01),
                             leg_depth
                         ],
-                        bottom=true
+                        bottom=true,
+                        bottom_angle=kickstand_leg_bottom_angle
                     );
                     if (kickstand_inner_snap) {
                         color(kickstand_color)
@@ -1247,41 +1695,49 @@ module cubeWithAngledTopBottom(
     top=false, topReverse=false, 
     bottom=false, bottomReverse=false, 
     left=false, leftReverse=false, 
-    right=false, rightReverse=false
+    right=false, rightReverse=false,
+    top_angle=45,
+    bottom_angle=45,
+    left_angle=45,
+    right_angle=45
 ) {
+    top_run = angled_face_run(size[2], top_angle);
+    bottom_run = angled_face_run(size[2], bottom_angle);
+    left_run = angled_face_run(size[2], left_angle);
+    right_run = angled_face_run(size[2], right_angle);
+
     translate(loc)
     cube(size);
 
     if (top) {
-        translate([loc[0], loc[1] - (topReverse ? size[2] : 0) + 0.01, loc[2]])
+        translate([loc[0], loc[1] - (topReverse ? top_run : 0) + 0.01, loc[2]])
         rotate(topReverse ? [0,0,0] : [90,0,0])
         polyhedron(//pt 0        1        2        3        4        5
-            points=[[0,0,0], [size[0],0,0], [size[0],size[2],0], [0,size[2],0], [0,size[2],size[2]], [size[0],size[2],size[2]]],
+            points=[[0,0,0], [size[0],0,0], [size[0],top_run,0], [0,top_run,0], [0,top_run,size[2]], [size[0],top_run,size[2]]],
             faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
         );
     }
     if (bottom) {
-        translate([loc[0], loc[1] + size[1] + (bottomReverse ? 0 : size[2]) - 0.01, loc[2] + size[2]])
+        translate([loc[0], loc[1] + size[1] + (bottomReverse ? 0 : bottom_run) - 0.01, loc[2] + size[2]])
         rotate(bottomReverse ? [270,0,0] : [180,0,0])
         polyhedron(//pt 0        1        2        3        4        5
-            points=[[0,0,0], [size[0],0,0], [size[0],size[2],0], [0,size[2],0], [0,size[2],size[2]], [size[0],size[2],size[2]]],
+            points=[[0,0,0], [size[0],0,0], [size[0],bottom_run,0], [0,bottom_run,0], [0,bottom_run,size[2]], [size[0],bottom_run,size[2]]],
             faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
         );
     }
     if (left) {
-        translate([loc[0] - (leftReverse ? 0 : size[2]) + 0.01, loc[1], loc[2] + size[2]])
+        translate([loc[0] - (leftReverse ? 0 : left_run) + 0.01, loc[1], loc[2] + size[2]])
         rotate(leftReverse ? [270,0,90] : [180,0,90])
         polyhedron(//pt 0        1        2        3        4        5
-            points=[[0,0,0], [size[1],0,0], [size[1],size[2],0], [0,size[2],0], [0,size[2],size[2]], [size[1],size[2],size[2]]],
+            points=[[0,0,0], [size[1],0,0], [size[1],left_run,0], [0,left_run,0], [0,left_run,size[2]], [size[1],left_run,size[2]]],
             faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
         );
     }
     if (right) {
-        translate([loc[0] + size[0] + (rightReverse ? 0 : size[2]) - 0.01, loc[1] + size[1], loc[2] + size[2]])
-        // translate([loc[0] + size[0] + (rightReverse ? 0 : size[2]) - 0.01, loc[1], loc[2]])
+        translate([loc[0] + size[0] + (rightReverse ? 0 : right_run) - 0.01, loc[1] + size[1], loc[2] + size[2]])
         rotate(rightReverse ? [270,0,270] : [180,0,270])
         polyhedron(//pt 0        1        2        3        4        5
-            points=[[0,0,0], [size[1],0,0], [size[1],size[2],0], [0,size[2],0], [0,size[2],size[2]], [size[1],size[2],size[2]],
+            points=[[0,0,0], [size[1],0,0], [size[1],right_run,0], [0,right_run,0], [0,right_run,size[2]], [size[1],right_run,size[2]],
             ],
             faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
         );
@@ -1294,7 +1750,11 @@ module cubeWithLeftRightGapBridge(
     bottom=false, bottomReverse=false, 
     left=false, leftReverse=false, 
     right=false, rightReverse=false,
-    gap_width = 0.4
+    gap_width = 0.4,
+    top_angle=45,
+    bottom_angle=45,
+    left_angle=45,
+    right_angle=45
 ) {
     if (size[0] < size[1]) {
         cubeWithAngledTopBottom(
@@ -1318,10 +1778,18 @@ module cubeWithLeftRightGapBridge(
     cubeWithAngledTopBottom(
         [loc[0], loc[1], loc[2] + gap_width],
         [size[0], size[1], size[2] - gap_width], 
-        top, topReverse, 
-        bottom, bottomReverse, 
-        left, leftReverse, 
-        right, rightReverse
+        top=top,
+        topReverse=topReverse,
+        bottom=bottom,
+        bottomReverse=bottomReverse,
+        left=left,
+        leftReverse=leftReverse,
+        right=right,
+        rightReverse=rightReverse,
+        top_angle=top_angle,
+        bottom_angle=bottom_angle,
+        left_angle=left_angle,
+        right_angle=right_angle
     );
 }
 
@@ -1334,24 +1802,31 @@ sd_adapter_micro_hole_height = 3.3;
 module sdCardAdapterCutout() {
     translate([-sd_adapter_width / 2, 0, case_depth - 2 * sd_adapter_depth])
     difference() {
-        union() {
-            cube([sd_adapter_width, sd_adapter_height, sd_adapter_depth]);
-            translate([(sd_adapter_width - sd_adapter_micro_width) / 2, 0, sd_adapter_depth - 0.01])
+        if (sd_card_in_leg_shape == "adapter") {
+            union() {
+                cube([sd_adapter_width, sd_adapter_height, sd_adapter_depth]);
+                translate([(sd_adapter_width - sd_adapter_micro_width) / 2, 0, sd_adapter_depth - 0.01])
+                cube([sd_adapter_micro_width, sd_adapter_micro_hole_height, sd_adapter_depth]);
+            }
+            translate([sd_adapter_width, sd_adapter_height - 3.49, -0.11])
+            rotate([0, 0, 45])
+            cube([5.5, 5.5, sd_adapter_depth + 0.21]);
+        } else if (sd_card_in_leg_shape == "hole") {
+            translate([(sd_adapter_width - sd_adapter_micro_width) / 2, 0, sd_adapter_depth - 0.01 - sd_card_in_leg_hole_offset])
             cube([sd_adapter_micro_width, sd_adapter_micro_hole_height, sd_adapter_depth]);
         }
-        translate([sd_adapter_width, sd_adapter_height - 3.49, -0.11])
-        rotate([0, 0, 45])
-        cube([5.5, 5.5, sd_adapter_depth + 0.21]);
     }
 }
 
 module sdCardAdapterBase() {
-    sd_adapter_buffer = 0.5;
-    difference() {
-        translate([-sd_adapter_width / 2 - sd_adapter_buffer, 0.01, case_depth - 2 * sd_adapter_depth + 0.01])
-        cube([sd_adapter_width + 2 * sd_adapter_buffer, sd_adapter_height + sd_adapter_buffer, 2 * sd_adapter_depth]);
+    if (sd_card_in_leg_shape == "adapter") {
+        sd_adapter_buffer = 0.5;
+        difference() {
+            translate([-sd_adapter_width / 2 - sd_adapter_buffer, 0.01, case_depth - 2 * sd_adapter_depth + 0.01])
+            cube([sd_adapter_width + 2 * sd_adapter_buffer, sd_adapter_height + sd_adapter_buffer, 2 * sd_adapter_depth]);
 
-        sdCardAdapterCutout();
+            sdCardAdapterCutout();
+        }
     }
 }
 
@@ -1390,13 +1865,73 @@ module rearCooling() {
     );
 }
 
+function pi_pinholes_width_in_use() =
+    pi_pinholes_orientation == "vertical" ? pi_pinholes_height : pi_pinholes_width;
+
+function pi_pinholes_height_in_use() =
+    pi_pinholes_orientation == "vertical" ? pi_pinholes_width : pi_pinholes_height;
+
+function pi_pinholes_origin() =
+    let (
+        width = pi_pinholes_width_in_use(),
+        height = pi_pinholes_height_in_use()
+    ) [
+        pi_pinholes_x_percentage / 100 * (frame_full_width - width),
+        pi_pinholes_y_percentage / 100 * (frame_full_height - height)
+    ];
+
+function pi_relative_anchor_point(anchor, anchor_percentage) =
+    let (
+        width = pi_pinholes_width_in_use(),
+        height = pi_pinholes_height_in_use(),
+        origin = pi_pinholes_origin(),
+        left = origin[0],
+        right = origin[0] + width,
+        bottom = origin[1],
+        top = origin[1] + height,
+        center_x = origin[0] + width / 2,
+        center_y = origin[1] + height / 2
+    )
+    anchor == "percentage" ? [
+        anchor_percentage[0] / 100 * frame_full_width,
+        anchor_percentage[1] / 100 * frame_full_height
+    ] :
+    anchor == "top-left" ? [left, top] :
+    anchor == "top" ? [center_x, top] :
+    anchor == "top-right" ? [right, top] :
+    anchor == "left" ? [left, center_y] :
+    anchor == "right" ? [right, center_y] :
+    anchor == "bottom-left" ? [left, bottom] :
+    anchor == "bottom" ? [center_x, bottom] :
+    anchor == "bottom-right" ? [right, bottom] :
+    [center_x, center_y];
+
+function extra_pin_mounts_use_legacy() =
+    !extra_pin_mounts_enabled && extra_pinholes;
+
+function extra_pin_mounts_in_use() =
+    extra_pin_mounts_use_legacy() ? extra_pinholes_offsets : extra_pin_mounts;
+
+function extra_pin_mounts_anchor_point() =
+    pi_relative_anchor_point(
+        extra_pin_mounts_use_legacy() ? extra_pinholes_anchor : extra_pin_mounts_anchor,
+        extra_pin_mounts_use_legacy() ? extra_pinholes_anchor_percentage : extra_pin_mounts_anchor_percentage
+    );
+
+function extra_pinholes_anchor_point() =
+    extra_pin_mounts_anchor_point();
+
+function backplate_access_holes_anchor_point() =
+    pi_relative_anchor_point(backplate_access_holes_anchor, backplate_access_holes_anchor_percentage);
+
 module piPinholes() {
     let (
-        width = pi_pinholes_orientation == "vertical" ? pi_pinholes_height : pi_pinholes_width,
-        height = pi_pinholes_orientation == "vertical" ? pi_pinholes_width : pi_pinholes_height
+        width = pi_pinholes_width_in_use(),
+        height = pi_pinholes_height_in_use(),
+        origin = pi_pinholes_origin()
     ) {
-        pin_holes_x = pi_pinholes_x_percentage / 100 * (frame_full_width - width);
-        pin_holes_y = pi_pinholes_y_percentage / 100 * (frame_full_height - height);
+        pin_holes_x = origin[0];
+        pin_holes_y = origin[1];
 
         pin_hole_locations = [
             [pin_holes_x, pin_holes_y],
@@ -1405,21 +1940,104 @@ module piPinholes() {
             [pin_holes_x + width, pin_holes_y + height]
         ];
         for (loc = pin_hole_locations) {
-            translate([loc[0], loc[1], -0.11])
-            cylinder(d = pi_pinholes_diameter, h = case_depth + 0.22);
-            translate([loc[0], loc[1], case_depth - pi_pinholes_spacer_height - 0.11])
-            cylinder(d = pi_pinholes_spacer, h = pi_pinholes_spacer_height + 0.22);
+            pinHole(loc[0], loc[1]);
+        }
+    }
+}
+
+module pinHole(
+    x,
+    y,
+    pin_diameter = pi_pinholes_diameter,
+    spacer_diameter = pi_pinholes_spacer,
+    spacer_height = pi_pinholes_spacer_height,
+    pin_enabled = true
+) {
+    if (pin_enabled && pin_diameter > 0) {
+        translate([x, y, -0.11])
+        cylinder(d = pin_diameter, h = case_depth + 0.22);
+    }
+    if (spacer_diameter > 0 && spacer_height > 0) {
+        translate([x, y, case_depth - spacer_height - 0.11])
+        cylinder(d = spacer_diameter, h = spacer_height + 0.22);
+    }
+}
+
+function extra_pin_mount_value(mount, index, default_value) =
+    len(mount) > index ? (mount[index] == undef ? default_value : mount[index]) : default_value;
+
+function extra_pin_mount_pin_diameter(mount) =
+    extra_pin_mount_value(mount, 2, pi_pinholes_diameter);
+
+function extra_pin_mount_spacer_diameter(mount) =
+    extra_pin_mount_value(mount, 3, pi_pinholes_spacer);
+
+function extra_pin_mount_spacer_height(mount) =
+    extra_pin_mount_value(mount, 4, pi_pinholes_spacer_height);
+
+function extra_pin_mount_pin_enabled(mount) =
+    extra_pin_mount_value(mount, 5, true);
+
+module extraPinMounts() {
+    let (anchor = extra_pin_mounts_anchor_point()) {
+        for (mount = extra_pin_mounts_in_use()) {
+            pinHole(
+                anchor[0] + mount[0],
+                anchor[1] + mount[1],
+                extra_pin_mount_pin_diameter(mount),
+                extra_pin_mount_spacer_diameter(mount),
+                extra_pin_mount_spacer_height(mount),
+                extra_pin_mount_pin_enabled(mount)
+            );
+        }
+    }
+}
+
+module extraPinMountHoles() {
+    let (anchor = extra_pin_mounts_anchor_point()) {
+        for (mount = extra_pin_mounts_in_use()) {
+            let (spacer_height = extra_pin_mount_spacer_height(mount)) {
+                if (spacer_height > 0) {
+                    translate([
+                        anchor[0] + mount[0],
+                        anchor[1] + mount[1],
+                        case_depth - spacer_height - 0.11
+                    ])
+                    cylinder(d = extra_pin_mounts_hole_diameter, h = spacer_height + 0.11);
+                }
+            }
+        }
+    }
+}
+
+module extraPinHoles() {
+    extraPinMounts();
+}
+
+module backplateAccessHole(x, y) {
+    translate([x, y, case_depth - 0.11])
+    cylinder(d = backplate_access_holes_diameter, h = back_depth + 0.22);
+}
+
+module backplateAccessHoles() {
+    let (anchor = backplate_access_holes_anchor_point()) {
+        for (offset = backplate_access_holes_offsets) {
+            backplateAccessHole(
+                anchor[0] + offset[0],
+                anchor[1] + offset[1]
+            );
         }
     }
 }
 
 module piPinholesCooling() {
     let (
-        width = (pi_pinholes_orientation == "vertical" ? pi_pinholes_height : pi_pinholes_width),
-        height = (pi_pinholes_orientation == "vertical" ? pi_pinholes_width : pi_pinholes_height)
+        width = pi_pinholes_width_in_use(),
+        height = pi_pinholes_height_in_use(),
+        origin = pi_pinholes_origin()
     ) {
-        pin_holes_x = pi_pinholes_x_percentage / 100 * (frame_full_width - width);
-        pin_holes_y = pi_pinholes_y_percentage / 100 * (frame_full_height - height);
+        pin_holes_x = origin[0];
+        pin_holes_y = origin[1];
 
         coolingHoles(
             pin_holes_x, pin_holes_x + width,
@@ -1739,4 +2357,3 @@ difference() {
         cube([frame_full_width * cross_section_percentage / 100 + 0.2, frame_full_height + 500, 500]);
     }
 }
-
